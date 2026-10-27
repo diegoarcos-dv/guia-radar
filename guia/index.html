@@ -906,17 +906,31 @@
       }, 2500);
     }
 
-    function enviarComandoStart() {
-      triggerToast('🚀 Abriendo configuración en Telegram...');
+    function enviarComandoStart(param = 'config') {
+      triggerToast('🚀 Abriendo Rama B en Telegram...');
+      const deepLink = `https://t.me/Tendencias_DiegoBot?start=${param}`;
+
       if (window.Telegram && window.Telegram.WebApp) {
         try {
-          window.Telegram.WebApp.sendData('/start');
-          window.Telegram.WebApp.close();
-        } catch(e) {
-          window.location.href = "tg://resolve?domain=Tendencias_DiegoBot&start=config";
+          if (typeof window.Telegram.WebApp.openTelegramLink === 'function') {
+            window.Telegram.WebApp.openTelegramLink(deepLink);
+          } else {
+            window.open(deepLink, '_blank');
+          }
+          if (typeof window.Telegram.WebApp.close === 'function') {
+            window.Telegram.WebApp.close();
+          }
+          return;
+        } catch (e) {
+          console.error("Error abriendo enlace de Telegram WebApp:", e);
         }
-      } else {
-        window.location.href = "tg://resolve?domain=Tendencias_DiegoBot&start=config";
+      }
+
+      // Navegador web externo / PC
+      try {
+        window.location.href = deepLink;
+      } catch (e) {
+        window.open(deepLink, '_blank');
       }
     }
 
