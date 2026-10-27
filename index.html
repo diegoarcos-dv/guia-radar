@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Guía Interactiva &bull; Radar de Tendencias TI</title>
+  
+  <!-- SDK Oficial de Telegram WebApp -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Space Grotesk & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              darkBg: '#070a14',
+              surface: '#0d1326',
+              surfaceLight: '#141c38',
+              surfaceCard: '#101730',
+              mint: '#2ee6a8',
+              cyan: '#38bdf8',
+              violet: '#7c6cf0',
+              muted: '#8e96b0',
+            }
+          },
+          boxShadow: {
+            'neon-mint': '0 0 25px -4px rgba(46, 230, 168, 0.45)',
+            'neon-cyan': '0 0 25px -4px rgba(56, 189, 248, 0.45)',
+            'neon-violet': '0 0 30px -4px rgba(124, 108, 240, 0.45)',
+            'phone-glow': '0 0 45px -10px rgba(56, 189, 248, 0.3), 0 25px 60px -15px rgba(0, 0, 0, 0.9)',
+            'popover-glow': '0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 30px -5px rgba(56, 189, 248, 0.25)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Fondo espacial oscuro con orbes neón */
+    body {
+      background-color: #060913;
+      background-image: 
+        radial-gradient(ellipse at 50% 10%, rgba(124, 108, 240, 0.16) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 30%, rgba(56, 189, 248, 0.14) 0%, transparent 50%),
+        radial-gradient(ellipse at 15% 65%, rgba(46, 230, 168, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 90%, rgba(124, 108, 240, 0.18) 0%, transparent 55%),
+        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+        radial-gradient(circle at 90% 15%, rgba(255, 255, 255, 0.3) 1.2px, transparent 1.2px),
+        radial-gradient(circle at 80% 75%, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+        radial-gradient(circle at 25% 85%, rgba(255, 255, 255, 0.25) 1.2px, transparent 1.2px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 250px 250px, 320px 320px, 280px 280px, 350px 350px;
+    }
+
+    /* Animación flotante suave de la mascota */
+    @keyframes floating {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(1.2deg); }
+    }
+    .animate-floating {
+      animation: floating 4.5s ease-in-out infinite;
+    }
+
+    /* Pulso en el botón enfocado por el tour */
+    @keyframes spotlight-pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 2px #38bdf8, 0 0 20px rgba(56, 189, 248, 0.55);
+        border-color: #38bdf8;
+      }
+      50% {
+        box-shadow: 0 0 0 4px #2ee6a8, 0 0 30px rgba(46, 230, 168, 0.85);
+        border-color: #2ee6a8;
+      }
+    }
+    .spotlight-active {
+      animation: spotlight-pulse 1.8s infinite ease-in-out !important;
+      position: relative;
+      z-index: 30;
+    }
+
+    /* Transición suave entre pantallas del celular */
+    .screen-panel {
+      transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .screen-panel.hidden {
+      display: none;
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    .screen-panel.visible {
+      display: flex;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Scrollbar sutil para el visor */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #070a14; }
+    ::-webkit-scrollbar-thumb { background: #1a233d; border-radius: 999px; }
+  </style>
+</head>
+
+<body class="text-slate-100 min-h-screen py-4 px-3 sm:px-6 flex flex-col items-center select-none font-sans">
+
+  <!-- TOP BAR: Control de Modo y Salir -->
+  <header class="w-full max-w-4xl mb-4 bg-brand-surface/90 backdrop-blur-xl border border-brand-cyan/25 px-4 py-3 rounded-2xl flex items-center justify-between shadow-xl">
+    <div class="flex items-center gap-2.5">
+      <div class="relative flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-mint opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-brand-mint"></span>
+      </div>
+      <div>
+        <h1 class="text-xs sm:text-sm font-bold tracking-wide text-white font-display">
+          Radar B2B &bull; Simulador Interactivo
+        </h1>
+        <p class="text-[10px] text-brand-muted hidden sm:block">
+          Entrena y descubre cómo operar tus entregas diarias antes de tu primer reporte
+        </p>
+      </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="flex items-center gap-2">
+      <button id="btnTourToggle" onclick="toggleTourMode()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-brand-cyan/15 hover:bg-brand-cyan/25 text-brand-cyan border border-brand-cyan/40 transition-all flex items-center gap-1.5 active:scale-95 shadow-sm">
+        <span id="tourIcon">🎯</span>
+        <span id="tourBtnText">Reiniciar Tour</span>
+      </button>
+
+      <button onclick="enviarComandoStart()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-brand-mint/20 hover:bg-brand-mint/30 text-brand-mint border border-brand-mint/40 transition-all flex items-center gap-1 active:scale-95 shadow-sm">
+        <span>🚀</span>
+        <span class="hidden sm:inline">Iniciar</span> <span>/start</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL: Celular + Mascota Robot + Popover Spotlight -->
+  <main class="w-full max-w-4xl relative flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 my-auto">
+    
+    <!-- COLUMNA IZQUIERDA/LATERAL (Desktop): Mascota Robot 3D y Stats del Radar -->
+    <aside class="hidden lg:flex flex-col items-center justify-center w-60 shrink-0 gap-4">
+      <!-- Mascota Robot Flotante -->
+      <div class="w-36 h-36 relative animate-floating filter drop-shadow-[0_0_25px_rgba(56,189,248,0.35)]">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+          <defs>
+            <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#cbd5e1"/>
+              <stop offset="50%" stop-color="#64748b"/>
+              <stop offset="100%" stop-color="#334155"/>
+            </linearGradient>
+            <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#050d1a"/>
+              <stop offset="100%" stop-color="#0b172a"/>
+            </linearGradient>
+            <radialGradient id="mintGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#2ee6a8"/>
+              <stop offset="70%" stop-color="#0284c7"/>
+              <stop offset="100%" stop-color="#0369a1"/>
+            </radialGradient>
+            <filter id="glowFilter" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          <!-- Orejas / Sensores -->
+          <rect x="36" y="65" width="10" height="26" rx="5" fill="#475569"/>
+          <rect x="154" y="65" width="10" height="26" rx="5" fill="#475569"/>
+          <circle cx="41" cy="78" r="3" fill="#38bdf8" filter="url(#glowFilter)"/>
+          <circle cx="159" cy="78" r="3" fill="#38bdf8" filter="url(#glowFilter)"/>
+
+          <!-- Cabeza metálica -->
+          <rect x="46" y="40" width="108" height="78" rx="28" fill="url(#bodyGrad)" stroke="#94a3b8" stroke-width="2"/>
+          <rect x="52" y="46" width="96" height="66" rx="22" fill="#090e1a"/>
+
+          <!-- Pantalla LED -->
+          <rect x="56" y="50" width="88" height="58" rx="18" fill="url(#screenGrad)"/>
+
+          <!-- Ojos Menta Neón -->
+          <rect id="robotEyeL" x="70" y="68" width="22" height="18" rx="7" fill="url(#mintGlow)" filter="url(#glowFilter)"/>
+          <rect id="robotEyeR" x="108" y="68" width="22" height="18" rx="7" fill="url(#mintGlow)" filter="url(#glowFilter)"/>
+          
+          <!-- Sonrisa -->
+          <path d="M90 92 Q100 97 110 92" stroke="#2ee6a8" stroke-width="3" stroke-linecap="round" filter="url(#glowFilter)"/>
+
+          <!-- Cuello -->
+          <rect x="88" y="118" width="24" height="12" rx="4" fill="#334155"/>
+
+          <!-- Cuerpo -->
+          <path d="M60 134 C60 126 140 126 140 134 L134 175 C134 182 66 182 66 175 Z" fill="url(#bodyGrad)" stroke="#94a3b8" stroke-width="2"/>
+          
+          <!-- Reactor central de energía -->
+          <circle cx="100" cy="152" r="14" fill="#0b1329" stroke="#64748b" stroke-width="2"/>
+          <circle cx="100" cy="152" r="8" fill="url(#mintGlow)" filter="url(#glowFilter)"/>
+
+          <!-- Brazos -->
+          <g>
+            <ellipse cx="44" cy="148" rx="8" ry="16" fill="url(#bodyGrad)" transform="rotate(-15 44 148)" stroke="#94a3b8"/>
+            <circle cx="39" cy="164" r="7" fill="#475569"/>
+          </g>
+          <g>
+            <ellipse cx="156" cy="148" rx="8" ry="16" fill="url(#bodyGrad)" transform="rotate(15 156 148)" stroke="#94a3b8"/>
+            <circle cx="161" cy="164" r="7" fill="#475569"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Badge de IA Autónoma -->
+      <div class="bg-brand-surface/80 border border-brand-violet/30 rounded-2xl p-3 text-center shadow-lg w-full">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-brand-mint flex items-center justify-center gap-1.5 mb-1">
+          <span class="w-2 h-2 rounded-full bg-brand-mint animate-pulse"></span>
+          Agente Inteligente
+        </span>
+        <p class="text-xs text-slate-300 font-light leading-relaxed">
+          Toca cualquier botón del celular o sigue el tour paso a paso.
+        </p>
+      </div>
+
+      <!-- Píldoras de atajos -->
+      <div class="text-[11px] text-brand-muted flex flex-col gap-1 w-full text-center">
+        <span>💡 Modo interactivo activo</span>
+        <span class="text-brand-cyan/80">3 filas oficiales de control</span>
+      </div>
+    </aside>
+
+    <!-- COLUMNA CENTRAL: MOCKUP SMARTPHONE TELEGRAM (SANDBOX EN VIVO) -->
+    <div class="relative w-full max-w-[340px] sm:max-w-[370px] shrink-0">
+      
+      <!-- Chasis del Smartphone -->
+      <div class="relative w-full bg-[#080d1c] rounded-[44px] p-3 shadow-phone-glow border-[3px] border-slate-700/80">
+        
+        <!-- Botones físicos simulados en el chasis -->
+        <div class="absolute -left-[4.5px] top-24 w-1 h-9 bg-slate-700 rounded-l"></div>
+        <div class="absolute -left-[4.5px] top-36 w-1 h-9 bg-slate-700 rounded-l"></div>
+        <div class="absolute -right-[4.5px] top-28 w-1 h-14 bg-slate-700 rounded-r"></div>
+
+        <!-- PANTALLA OLED INTERNA (TELEGRAM DARK THEME) -->
+        <div class="relative w-full bg-[#0c101d] rounded-[36px] overflow-hidden border border-slate-800/90 flex flex-col justify-between" style="min-height: 590px;">
+          
+          <!-- Top Bar / Dynamic Island de Telegram -->
+          <div class="pt-2.5 px-5 pb-1.5 flex justify-between items-center text-[11px] text-slate-400 bg-[#080d1c]">
+            <span class="font-semibold text-slate-200" id="clockTime">10:45 AM</span>
+            <div class="w-20 h-4 bg-black rounded-full flex items-center justify-center">
+              <div class="w-2 h-2 rounded-full bg-slate-800 mr-2"></div>
+              <div class="w-1.5 h-1.5 rounded-full bg-cyan-900"></div>
+            </div>
+            <div class="flex items-center gap-1 text-[10px]">
+              <span>5G</span>
+              <span>🔋 96%</span>
+            </div>
+          </div>
+
+          <!-- Cabecera del Bot de Telegram -->
+          <div class="px-4 py-2 bg-[#12172b] border-b border-slate-800/80 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-brand-violet to-brand-cyan flex items-center justify-center text-xs font-bold text-white shadow-sm">
+                🤖
+              </div>
+              <div class="text-left leading-tight">
+                <div class="text-xs font-bold text-white flex items-center gap-1">
+                  <span>Radar Tendencias</span>
+                  <span class="text-brand-cyan text-[10px]">✓</span>
+                </div>
+                <span class="text-[9px] text-brand-mint">bot &bull; en línea</span>
+              </div>
+            </div>
+            <span class="text-xs text-slate-400">⋮</span>
+          </div>
+
+          <!-- ÁREA DINÁMICA DE MENSAJE (PANTALLAS INTERCAMBIABLES) -->
+          <div class="p-2.5 flex-1 flex flex-col justify-end text-left overflow-y-auto" style="max-height: 420px;">
+            
+            <!-- PANTALLA 1: TARJETA PRINCIPAL #1 (XDR & SOAR) -->
+            <div id="screen-trend-1" class="screen-panel visible flex-col bg-brand-surfaceCard border border-brand-cyan/20 rounded-2xl p-3 shadow-lg">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-bold text-brand-muted uppercase tracking-wider">Ciberseguridad &bull; B2B</span>
+                <span class="inline-flex items-center gap-1 bg-brand-mint/15 text-brand-mint border border-brand-mint/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-mint animate-pulse"></span>
+                  Alto impacto
+                </span>
+              </div>
+              <h2 class="text-sm font-bold text-white font-display leading-snug mb-1">
+                Detección XDR y Respuesta SOAR
+              </h2>
+              <div class="flex items-baseline gap-2 mb-2">
+                <span class="text-2xl font-black text-white font-display">31,500+</span>
+                <span class="text-[10px] text-brand-cyan font-semibold">▲ +85% demanda</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug mb-2 font-light">
+                Automatización de respuesta ante incidentes para SOCs y MSSPs, resolviendo la fatiga de alertas críticas.
+              </p>
+              <!-- Mini Stack -->
+              <div class="bg-[#090d1c] rounded-xl p-2 border border-slate-800 text-[9px] flex justify-between items-center text-slate-300">
+                <span class="text-brand-cyan font-mono font-medium">CrowdStrike &bull; Splunk SOAR</span>
+                <span class="bg-brand-mint/15 text-brand-mint px-1.5 py-0.5 rounded text-[8px] font-bold">Consolidado</span>
+              </div>
+            </div>
+
+            <!-- PANTALLA 1B: TARJETA PRINCIPAL #2 (E-Commerce Agents) -->
+            <div id="screen-trend-2" class="screen-panel hidden flex-col bg-brand-surfaceCard border border-brand-violet/30 rounded-2xl p-3 shadow-lg">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-bold text-brand-muted uppercase tracking-wider">E-Commerce B2B &bull; SaaS</span>
+                <span class="inline-flex items-center gap-1 bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30 text-[9px] px-2 py-0.5 rounded-full font-semibold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse"></span>
+                  En crecimiento
+                </span>
+              </div>
+              <h2 class="text-sm font-bold text-white font-display leading-snug mb-1">
+                Agentes Autónomos de Catálogo B2B
+              </h2>
+              <div class="flex items-baseline gap-2 mb-2">
+                <span class="text-2xl font-black text-white font-display">48,200+</span>
+                <span class="text-[10px] text-brand-mint font-semibold">▲ +64% adopción</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug mb-2 font-light">
+                Sincronización en tiempo real y agentes conversacionales 24/7 para pedidos mayoristas de alto volumen.
+              </p>
+              <div class="bg-[#090d1c] rounded-xl p-2 border border-slate-800 text-[9px] flex justify-between items-center text-slate-300">
+                <span class="text-brand-violet font-mono font-medium">LangGraph &bull; Shopify Plus API</span>
+                <span class="bg-brand-violet/20 text-brand-violet px-1.5 py-0.5 rounded text-[8px] font-bold">Escalando</span>
+              </div>
+            </div>
+
+            <!-- PANTALLA 2: DEMANDA EMPRESARIAL B2B -->
+            <div id="screen-demand" class="screen-panel hidden flex-col bg-brand-surfaceCard border border-brand-mint/40 rounded-2xl p-3 shadow-lg">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-bold text-brand-mint uppercase tracking-wider flex items-center gap-1">
+                  <span>🏢</span> Demanda Institucional TI
+                </span>
+                <span class="bg-emerald-950 text-brand-mint text-[9px] px-2 py-0.5 rounded font-mono font-semibold">Licitación Activa</span>
+              </div>
+              <div class="bg-[#090e1c] border border-slate-800 rounded-xl p-2.5 mb-2">
+                <h3 class="text-xs font-bold text-white leading-tight mb-0.5">Fiscalía General / C5 CDMX</h3>
+                <p class="text-[10px] text-slate-300 leading-relaxed">
+                  Adquisición de plataforma de orquestación SOAR y analítica forense para infraestructura híbrida.
+                </p>
+              </div>
+              <div class="grid grid-cols-2 gap-1.5 text-[9px] mb-2 font-mono">
+                <div class="bg-slate-900/80 p-1.5 rounded-lg border border-slate-800">
+                  <span class="text-slate-400 block text-[8px]">Presupuesto Est.</span>
+                  <span class="text-brand-mint font-bold">$4.2M MXN</span>
+                </div>
+                <div class="bg-slate-900/80 p-1.5 rounded-lg border border-slate-800">
+                  <span class="text-slate-400 block text-[8px]">Vigencia</span>
+                  <span class="text-white font-bold">Q4 2026</span>
+                </div>
+              </div>
+              <button class="w-full py-1.5 rounded-lg bg-brand-mint/20 text-brand-mint text-[10px] font-bold border border-brand-mint/30 hover:bg-brand-mint/30 transition-colors">
+                📄 Simular Propuesta SOW
+              </button>
+            </div>
+
+            <!-- PANTALLA 3: EVENTOS TECNOLÓGICOS PRESENCIALES -->
+            <div id="screen-events" class="screen-panel hidden flex-col bg-brand-surfaceCard border border-fuchsia-500/40 rounded-2xl p-3 shadow-lg">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-bold text-fuchsia-400 uppercase tracking-wider flex items-center gap-1">
+                  <span>🎟️</span> Evento Presencial CDMX
+                </span>
+                <span class="bg-fuchsia-950/80 text-fuchsia-300 text-[9px] px-2 py-0.5 rounded font-semibold">Registro Abierto</span>
+              </div>
+              <h3 class="text-xs font-bold text-white font-display mb-1">
+                Cloud & AI Enterprise Summit 2026
+              </h3>
+              <p class="text-[10px] text-slate-300 leading-snug mb-2 font-light">
+                Foro para directores de TI, arquitectos de software y líderes de seguridad en México.
+              </p>
+              <div class="bg-[#090d1c] border border-slate-800 rounded-xl p-2 text-[9px] flex flex-col gap-1 text-slate-300 mb-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-brand-cyan">📍</span>
+                  <span>World Trade Center CDMX &bull; Salón Olmeca</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-brand-mint">🗓️</span>
+                  <span>19 de Noviembre &bull; 09:00 a 18:00 hrs</span>
+                </div>
+              </div>
+              <button class="w-full py-1.5 rounded-lg bg-fuchsia-600/20 text-fuchsia-300 text-[10px] font-bold border border-fuchsia-500/40 hover:bg-fuchsia-600/30 transition-colors">
+                🎟️ Apartar Asistencia Gratuita
+              </button>
+            </div>
+
+            <!-- PANTALLA 4: GRÁFICA DE MERCADO INTERACTIVA -->
+            <div id="screen-chart" class="screen-panel hidden flex-col bg-brand-surfaceCard border border-brand-cyan/40 rounded-2xl p-3 shadow-lg">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-bold text-brand-cyan uppercase tracking-wider flex items-center gap-1">
+                  <span>📈</span> Curva de Adopción Real
+                </span>
+                <span class="text-brand-mint text-[9px] font-mono font-bold">+85% Demanda</span>
+              </div>
+              
+              <!-- Gráfica SVG Vectorial Neón -->
+              <div class="bg-[#080d1a] rounded-xl p-2 border border-slate-800 mb-2">
+                <svg viewBox="0 0 280 110" class="w-full h-24 overflow-visible">
+                  <defs>
+                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#2ee6a8" stop-opacity="0.35"/>
+                      <stop offset="100%" stop-color="#2ee6a8" stop-opacity="0.0"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Ejes sutiles -->
+                  <line x1="20" y1="95" x2="270" y2="95" stroke="#1e293b" stroke-width="1"/>
+                  <line x1="20" y1="20" x2="20" y2="95" stroke="#1e293b" stroke-width="1"/>
+                  
+                  <!-- Área sombreada -->
+                  <path d="M 25 85 Q 75 75 125 55 T 225 35 T 265 18 L 265 95 L 25 95 Z" fill="url(#chartGrad)"/>
+                  <!-- Línea de curva -->
+                  <path d="M 25 85 Q 75 75 125 55 T 225 35 T 265 18" fill="none" stroke="#2ee6a8" stroke-width="2.5" stroke-linecap="round"/>
+                  
+                  <!-- Puntos clave -->
+                  <circle cx="25" cy="85" r="3.5" fill="#080d1a" stroke="#2ee6a8" stroke-width="2"/>
+                  <circle cx="125" cy="55" r="3.5" fill="#080d1a" stroke="#38bdf8" stroke-width="2"/>
+                  <circle cx="265" cy="18" r="4.5" fill="#2ee6a8" stroke="#ffffff" stroke-width="2">
+                    <animate attributeName="r" values="3.5;5.5;3.5" dur="2s" repeatCount="indefinite"/>
+                  </circle>
+                  <text x="235" y="14" fill="#2ee6a8" font-size="8" font-weight="bold" font-family="Space Grotesk">31.5K</text>
+                </svg>
+                <div class="flex justify-between text-[8px] text-slate-500 font-mono px-1 mt-1">
+                  <span>MAY</span>
+                  <span>JUN</span>
+                  <span>JUL</span>
+                  <span>AGO</span>
+                  <span>SEP</span>
+                  <span>ACTUAL</span>
+                </div>
+              </div>
+              <span class="text-[9px] text-slate-400 text-center block">
+                Crecimiento sostenido impulsado por exigencias de cumplimiento en LATAM
+              </span>
+            </div>
+
+            <!-- PANTALLA 5: AJUSTES Y CALIBRACIÓN -->
+            <div id="screen-settings" class="screen-panel hidden flex-col bg-brand-surfaceCard border border-amber-500/40 rounded-2xl p-3 shadow-lg">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1">
+                  <span>⚙️</span> Configuración del Radar
+                </span>
+                <span class="text-[9px] text-slate-400">Paso 3 de Onboarding</span>
+              </div>
+              <div class="space-y-1.5 text-[10px] text-slate-300 mb-2.5">
+                <div class="bg-[#090d1c] p-2 rounded-xl border border-slate-800 flex justify-between items-center">
+                  <span class="text-slate-400">📍 Región:</span>
+                  <span class="text-brand-cyan font-semibold">México / Global</span>
+                </div>
+                <div class="bg-[#090d1c] p-2 rounded-xl border border-slate-800 flex justify-between items-center">
+                  <span class="text-slate-400">🏢 Industria:</span>
+                  <span class="text-brand-mint font-semibold truncate max-w-[150px]">TI & Software B2B</span>
+                </div>
+                <div class="bg-[#090d1c] p-2 rounded-xl border border-slate-800 flex justify-between items-center">
+                  <span class="text-slate-400">⏰ Horario:</span>
+                  <span class="text-amber-300 font-semibold font-mono">10:00 AM diario</span>
+                </div>
+              </div>
+              <button onclick="enviarComandoStart()" class="w-full py-1.5 rounded-lg bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/40 hover:bg-amber-500/30 transition-colors">
+                ⚙️ Recalibrar Mis Preferencias (/start)
+              </button>
+            </div>
+
+          </div>
+
+          <!-- BOTONERA OFICIAL DE TELEGRAM (ORDEN REAREADO 100% FIEL) -->
+          <div class="p-2.5 pt-1 bg-[#090d1c] border-t border-slate-800/90 flex flex-col gap-1.5">
+            
+            <!-- VISTA PRINCIPAL (DEFAULT) -->
+            <div id="viewMainMenu" class="flex flex-col gap-1.5">
+              
+              <!-- FILA 1: Carrusel < 1/5 > -->
+              <div id="btnRow1" class="grid grid-cols-3 gap-1">
+                <button onclick="navPrevTrend()" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center transition-all border border-slate-700/60 shadow-sm">
+                  ◀️
+                </button>
+                <button onclick="navToggleTrend()" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
+                  <span>📌</span>
+                  <span id="trendCounterLabel">1 / 5</span>
+                </button>
+                <button onclick="navNextTrend()" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center transition-all border border-slate-700/60 shadow-sm">
+                  ▶️
+                </button>
+              </div>
+
+              <!-- FILA 2: Demanda / Eventos (¡Gráfica se movió a Acciones!) -->
+              <div id="btnRow2" class="grid grid-cols-2 gap-1 text-[11px]">
+                <button id="btnDemanda" onclick="showScreen('screen-demand', 2)" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
+                  <span>🏢</span>
+                  <span>Demanda</span>
+                </button>
+                <button id="btnEventos" onclick="showScreen('screen-events', 3)" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
+                  <span>🎟️</span>
+                  <span>Eventos</span>
+                </button>
+              </div>
+
+              <!-- FILA 3: Acciones v / Ajustes -->
+              <div id="btnRow3" class="grid grid-cols-2 gap-1 text-[11px]">
+                <button id="btnAcciones" onclick="openSubmenuAcciones()" class="bg-[#212944] hover:bg-[#2c375b] active:scale-95 text-amber-300 font-bold py-2 rounded-xl flex items-center justify-center gap-1 transition-all border border-amber-500/25 shadow-sm">
+                  <span>🧰</span>
+                  <span>Acciones ▾</span>
+                </button>
+                <button id="btnAjustes" onclick="showScreen('screen-settings', 5)" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
+                  <span>⚙️</span>
+                  <span>Ajustes</span>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- SUBMENÚ ACCIONES (AL TOCAR ACCIONES v) -->
+            <div id="viewSubMenu" class="hidden flex-col gap-1.5">
+              
+              <!-- Sub Fila 1: Gráfica / Nueva -->
+              <div class="grid grid-cols-2 gap-1 text-[11px]">
+                <button id="btnGraficaSub" onclick="showScreen('screen-chart', 4)" class="bg-[#242e4d] hover:bg-[#2e3b63] text-brand-cyan font-bold py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-brand-cyan/30 shadow-sm">
+                  <span>📈</span>
+                  <span>Gráfica</span>
+                </button>
+                <button onclick="simularNuevaTrend()" class="bg-[#1b2238] hover:bg-[#252f4d] text-white font-medium py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
+                  <span>⚡</span>
+                  <span>Nueva</span>
+                </button>
+              </div>
+
+              <!-- Sub Fila 2: Stack / Fuente -->
+              <div class="grid grid-cols-2 gap-1 text-[11px]">
+                <button onclick="alertFeedback('🛠️ Stack Técnico desplegado')" class="bg-[#1b2238] hover:bg-[#252f4d] text-white font-medium py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
+                  <span>🛠️</span>
+                  <span>Stack</span>
+                </button>
+                <button onclick="alertFeedback('🏛️ Auditoría de Fuente Externa abierta')" class="bg-[#1b2238] hover:bg-[#252f4d] text-white font-medium py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
+                  <span>🏛️</span>
+                  <span>Fuente</span>
+                </button>
+              </div>
+
+              <!-- Sub Fila 3: Guardar / Mis guardados -->
+              <div class="grid grid-cols-2 gap-1 text-[11px]">
+                <button onclick="alertFeedback('⭐ Guardado en tus favoritos con éxito')" class="bg-[#1b2238] hover:bg-[#252f4d] text-amber-300 font-medium py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
+                  <span>⭐</span>
+                  <span>Guardar</span>
+                </button>
+                <button onclick="alertFeedback('📁 Abriendo tu catálogo de favoritos')" class="bg-[#1b2238] hover:bg-[#252f4d] text-white font-medium py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
+                  <span>📁</span>
+                  <span>Mis guardados</span>
+                </button>
+              </div>
+
+              <!-- Sub Fila 4: Grupo TI / Volver -->
+              <div class="grid grid-cols-2 gap-1 text-[11px]">
+                <button onclick="alertFeedback('👥 Accediendo al Grupo Público de Discusión')" class="bg-[#1b2238] hover:bg-[#252f4d] text-brand-cyan font-medium py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
+                  <span>👥</span>
+                  <span>Grupo TI</span>
+                </button>
+                <button onclick="closeSubmenuAcciones()" class="bg-[#2a1c2d] hover:bg-[#3a273e] text-fuchsia-300 font-bold py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-fuchsia-500/30 shadow-sm">
+                  <span>🔙</span>
+                  <span>Volver</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: RECUADRO SPOTLIGHT (POPOVER EXPLICATIVO DARK TECH) -->
+    <div id="tourPopoverCard" class="w-full max-w-[340px] sm:max-w-[360px] bg-brand-surface/95 backdrop-blur-2xl border border-brand-cyan/40 rounded-3xl p-5 shadow-popover-glow flex flex-col justify-between transition-all duration-300">
+      
+      <div>
+        <!-- Píldora del Paso (Estilo Neón del Agente) -->
+        <div class="flex items-center justify-between mb-3">
+          <span id="popoverStepPill" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-brand-mint/15 text-brand-mint border border-brand-mint/35">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-mint animate-pulse"></span>
+            CONOCE TU RADAR &bull; 1 DE 5
+          </span>
+          <!-- Indicador de Puntos -->
+          <div class="flex items-center gap-1.5" id="dotsContainer">
+            <span class="w-2 h-2 rounded-full bg-brand-mint shadow-[0_0_8px_#2ee6a8]"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
+          </div>
+        </div>
+
+        <!-- Título del Paso -->
+        <h2 id="popoverTitle" class="text-lg sm:text-xl font-bold font-display text-white leading-tight mb-2">
+          Carrusel de Tendencias
+        </h2>
+
+        <!-- Descripción -->
+        <p id="popoverDesc" class="text-xs sm:text-sm text-slate-300 leading-relaxed font-light mb-4">
+          Navega entre las 5 mejores tecnologías comerciales del día en el mismo mensaje con las flechas <strong class="text-brand-cyan">◀️ y ▶️</strong> sin saturar tu chat.
+        </p>
+
+        <!-- Indicador de Acción Interactiva -->
+        <div id="popoverActionHint" class="bg-brand-darkBg/90 border border-brand-cyan/20 rounded-xl p-2.5 mb-4 text-[11px] text-brand-cyan flex items-center gap-2">
+          <span class="text-base animate-bounce">👉</span>
+          <span id="popoverHintText">Prueba dar clic en el botón <strong class="text-white">▶️</strong> del celular para cambiar de tarjeta.</span>
+        </div>
+      </div>
+
+      <!-- Barra de Navegación del Tour (Omitir, Atrás, Siguiente) -->
+      <div class="flex items-center justify-between pt-3 border-t border-slate-800/80">
+        <button onclick="skipTour()" class="text-xs font-semibold text-slate-400 hover:text-white transition-colors px-2 py-1">
+          Omitir
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button id="btnTourPrev" onclick="prevTourStep()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 bg-slate-800/80 hover:bg-slate-700 transition-all active:scale-95 disabled:opacity-30 disabled:pointer-events-none">
+            Atrás
+          </button>
+          
+          <button id="btnTourNext" onclick="nextTourStep()" class="px-5 py-2 rounded-xl text-xs font-bold text-brand-darkBg bg-gradient-to-r from-brand-mint to-brand-cyan hover:brightness-110 transition-all active:scale-95 shadow-neon-mint flex items-center gap-1">
+            <span id="btnNextText">Siguiente</span>
+            <span id="btnNextArrow">&rarr;</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- TOAST NOTIFICACIÓN INTERACTIVA -->
+  <div id="toastNotification" class="fixed bottom-5 bg-brand-surface/95 border border-brand-mint/40 text-white text-xs px-4 py-2.5 rounded-2xl shadow-2xl backdrop-blur-xl flex items-center gap-2 transform translate-y-24 opacity-0 transition-all duration-300 z-50">
+    <span id="toastIcon">✨</span>
+    <span id="toastMessage">Acción completada</span>
+  </div>
+
+  <!-- SCRIPT CON LA LÓGICA COMPLETA DE INTERACCIÓN -->
+  <script>
+    // Inicializar Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
+
+    // Datos de los 5 Pasos del Tour Spotlight
+    const tourSteps = [
+      {
+        stepNum: 1,
+        pill: "CONOCE TU RADAR &bull; 1 DE 5",
+        title: "Carrusel de Tendencias",
+        desc: "Cada día recibes un catálogo con las mejores tecnologías comerciales. Usa la primera fila para recorrer las 5 fichas sin saturar tu chat.",
+        hint: "Da clic en las flechas ◀️ o ▶️ en el teléfono para rotar de tendencia.",
+        targetElementId: "btnRow1",
+        screenToShow: "screen-trend-1",
+        openSubmenu: false
+      },
+      {
+        stepNum: 2,
+        pill: "CONOCE TU RADAR &bull; 2 DE 5",
+        title: "Demanda Empresarial B2B",
+        desc: "Identifica qué corporativos y dependencias de gobierno tienen convocatorias y solicitudes de compra activas para este stack.",
+        hint: "Toca el botón 🏢 Demanda en la fila 2 para ver una licitación real.",
+        targetElementId: "btnDemanda",
+        screenToShow: "screen-demand",
+        openSubmenu: false
+      },
+      {
+        stepNum: 3,
+        pill: "CONOCE TU RADAR &bull; 3 DE 5",
+        title: "Eventos Tecnológicos Presenciales",
+        desc: "Accede al calendario de congresos, foros y summits presenciales en CDMX adaptados a tu sector para alianzas comerciales.",
+        hint: "Toca 🎟️ Eventos en la fila 2 para consultar el evento sugerido.",
+        targetElementId: "btnEventos",
+        screenToShow: "screen-events",
+        openSubmenu: false
+      },
+      {
+        stepNum: 4,
+        pill: "CONOCE TU RADAR &bull; 4 DE 5",
+        title: "Submenú Acciones (Gráfica y Stack)",
+        desc: "Al pulsar 🧰 Acciones ▾ se despliegan herramientas técnicas: Gráfica de tracción 📈, pedir una Nueva entrega ⚡, Stack 🛠️ y Favoritos ⭐.",
+        hint: "El submenú se ha desplegado. Toca 📈 Gráfica para ver la curva de demanda.",
+        targetElementId: "btnAcciones",
+        screenToShow: "screen-chart",
+        openSubmenu: true
+      },
+      {
+        stepNum: 5,
+        pill: "CONOCE TU RADAR &bull; 5 DE 5",
+        title: "Ajustes y Personalización",
+        desc: "Calibra tu radar con tu país o zona local, tu industria específica y define a qué hora recibirás tu reporte matutino.",
+        hint: "Toca ⚙️ Ajustes en la fila 3 para ver tu panel de personalización.",
+        targetElementId: "btnAjustes",
+        screenToShow: "screen-settings",
+        openSubmenu: false
+      }
+    ];
+
+    let currentStep = 1;
+    let isTourActive = true;
+    let currentTrendIndex = 1;
+
+    // Actualizar reloj del smartphone en tiempo real
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const el = document.getElementById('clockTime');
+      if (el) el.textContent = `${hours}:${minutes} ${ampm}`;
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    // Cambiar pantallas en el celular
+    function showScreen(screenId, stepIndex) {
+      document.querySelectorAll('.screen-panel').forEach(p => {
+        p.classList.remove('visible');
+        p.classList.add('hidden');
+      });
+
+      const targetScreen = document.getElementById(screenId);
+      if (targetScreen) {
+        targetScreen.classList.remove('hidden');
+        targetScreen.classList.add('visible');
+      }
+
+      // Si el usuario toca un botón y el tour está activo, sincronizar el paso
+      if (isTourActive && stepIndex && stepIndex !== currentStep) {
+        goToStep(stepIndex);
+      }
+    }
+
+    // Navegación de Carrusel (Tendencia 1 y 2)
+    function navNextTrend() {
+      currentTrendIndex = currentTrendIndex === 1 ? 2 : 1;
+      updateTrendDisplay();
+      triggerToast('🔄 Tarjeta cambiada en el carrusel');
+    }
+
+    function navPrevTrend() {
+      navNextTrend();
+    }
+
+    function navToggleTrend() {
+      navNextTrend();
+    }
+
+    function updateTrendDisplay() {
+      const counter = document.getElementById('trendCounterLabel');
+      if (counter) counter.textContent = `${currentTrendIndex} / 5`;
+      
+      const s1 = document.getElementById('screen-trend-1');
+      const s2 = document.getElementById('screen-trend-2');
+      
+      document.querySelectorAll('.screen-panel').forEach(p => {
+        p.classList.remove('visible');
+        p.classList.add('hidden');
+      });
+
+      if (currentTrendIndex === 1) {
+        s1.classList.remove('hidden');
+        s1.classList.add('visible');
+      } else {
+        s2.classList.remove('hidden');
+        s2.classList.add('visible');
+      }
+    }
+
+    // Control de Submenú Acciones
+    function openSubmenuAcciones() {
+      document.getElementById('viewMainMenu').classList.add('hidden');
+      document.getElementById('viewSubMenu').classList.remove('hidden');
+      document.getElementById('viewSubMenu').classList.add('flex');
+      showScreen('screen-chart', 4);
+    }
+
+    function closeSubmenuAcciones() {
+      document.getElementById('viewSubMenu').classList.add('hidden');
+      document.getElementById('viewSubMenu').classList.remove('flex');
+      document.getElementById('viewMainMenu').classList.remove('hidden');
+      updateTrendDisplay();
+    }
+
+    // Funciones del Tour Spotlight
+    function updateTourUI() {
+      const step = tourSteps[currentStep - 1];
+
+      // Actualizar Popover
+      document.getElementById('popoverStepPill').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-brand-mint animate-pulse"></span> ${step.pill}`;
+      document.getElementById('popoverTitle').textContent = step.title;
+      document.getElementById('popoverDesc').textContent = step.desc;
+      document.getElementById('popoverHintText').innerHTML = step.hint;
+
+      // Actualizar dots
+      const dots = document.getElementById('dotsContainer').children;
+      for (let i = 0; i < dots.length; i++) {
+        if (i === currentStep - 1) {
+          dots[i].className = "w-2.5 h-2.5 rounded-full bg-brand-mint shadow-[0_0_10px_#2ee6a8]";
+        } else {
+          dots[i].className = "w-1.5 h-1.5 rounded-full bg-slate-700";
+        }
+      }
+
+      // Remover halos activos
+      document.querySelectorAll('.spotlight-active').forEach(el => {
+        el.classList.remove('spotlight-active');
+      });
+
+      // Iluminar botón objetivo
+      if (step.openSubmenu) {
+        openSubmenuAcciones();
+        const chartBtn = document.getElementById('btnGraficaSub');
+        if (chartBtn) chartBtn.classList.add('spotlight-active');
+      } else {
+        if (!document.getElementById('viewSubMenu').classList.contains('hidden')) {
+          closeSubmenuAcciones();
+        }
+        const targetBtn = document.getElementById(step.targetElementId);
+        if (targetBtn) targetBtn.classList.add('spotlight-active');
+      }
+
+      // Mostrar pantalla correspondiente
+      showScreen(step.screenToShow);
+
+      // Botón Atrás
+      const btnPrev = document.getElementById('btnTourPrev');
+      btnPrev.disabled = currentStep === 1;
+
+      // Botón Siguiente / Finalizar
+      const btnNextText = document.getElementById('btnNextText');
+      const btnNextArrow = document.getElementById('btnNextArrow');
+      if (currentStep === tourSteps.length) {
+        btnNextText.textContent = "¡Comenzar!";
+        btnNextArrow.textContent = "🚀";
+      } else {
+        btnNextText.textContent = "Siguiente";
+        btnNextArrow.textContent = "→";
+      }
+    }
+
+    function nextTourStep() {
+      if (currentStep < tourSteps.length) {
+        currentStep++;
+        updateTourUI();
+      } else {
+        enviarComandoStart();
+      }
+    }
+
+    function prevTourStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateTourUI();
+      }
+    }
+
+    function goToStep(stepIndex) {
+      currentStep = stepIndex;
+      updateTourUI();
+    }
+
+    function skipTour() {
+      isTourActive = false;
+      document.querySelectorAll('.spotlight-active').forEach(el => el.classList.remove('spotlight-active'));
+      const popover = document.getElementById('tourPopoverCard');
+      popover.style.opacity = '0.5';
+      document.getElementById('popoverHintText').innerHTML = "Modo Libre: Puedes dar clic a cualquier botón para probar el radar sin restricciones.";
+      triggerToast('🎮 Modo Sandbox Libre activado');
+    }
+
+    function toggleTourMode() {
+      isTourActive = true;
+      const popover = document.getElementById('tourPopoverCard');
+      popover.style.opacity = '1';
+      currentStep = 1;
+      updateTourUI();
+      triggerToast('🎯 Tour interactivo reiniciado');
+    }
+
+    function simularNuevaTrend() {
+      triggerToast('⚡ Generando nueva entrega con Ollama...');
+      setTimeout(() => {
+        navNextTrend();
+      }, 700);
+    }
+
+    function alertFeedback(msg) {
+      triggerToast(msg);
+    }
+
+    function triggerToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastMessage');
+      text.textContent = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 2500);
+    }
+
+    function enviarComandoStart() {
+      triggerToast('🚀 Abriendo configuración en Telegram...');
+      if (window.Telegram && window.Telegram.WebApp) {
+        try {
+          window.Telegram.WebApp.sendData('/start');
+          window.Telegram.WebApp.close();
+        } catch(e) {
+          window.location.href = "tg://resolve?domain=Tendencias_DiegoBot&start=config";
+        }
+      } else {
+        window.location.href = "tg://resolve?domain=Tendencias_DiegoBot&start=config";
+      }
+    }
+
+    // Iniciar con el primer paso del tour
+    window.addEventListener('DOMContentLoaded', () => {
+      updateTourUI();
+    });
+  </script>
+
+</body>
+</html>
