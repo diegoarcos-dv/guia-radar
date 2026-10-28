@@ -474,8 +474,8 @@
                   <span class="text-amber-300 font-semibold font-mono">10:00 AM diario</span>
                 </div>
               </div>
-              <button onclick="enviarComandoStart()" class="w-full py-1.5 rounded-lg bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/40 hover:bg-amber-500/30 transition-colors">
-                ⚙️ Recalibrar Mis Preferencias (/start)
+              <button id="btnSettingsStart" onclick="enviarComandoStart()" class="relative w-full py-2 rounded-xl bg-gradient-to-r from-brand-mint/25 to-brand-cyan/25 hover:from-brand-mint/35 hover:to-brand-cyan/35 text-brand-mint text-xs font-bold border border-brand-mint/50 hover:border-brand-mint shadow-neon-mint transition-all active:scale-95">
+                🚀 ¡Comenzar y Configurar Mi Agente! (/start)
               </button>
             </div>
 
@@ -652,7 +652,7 @@
             Atrás
           </button>
           
-          <button id="btnTourNext" onclick="nextTourStep()" class="px-5 py-2 rounded-xl text-xs font-bold text-brand-darkBg bg-gradient-to-r from-brand-mint to-brand-cyan hover:brightness-110 transition-all active:scale-95 shadow-neon-mint flex items-center gap-1">
+          <button id="btnTourNext" onclick="nextTourStep()" class="relative px-5 py-2 rounded-xl text-xs font-bold text-brand-darkBg bg-gradient-to-r from-brand-mint to-brand-cyan hover:brightness-110 transition-all active:scale-95 shadow-neon-mint flex items-center gap-1">
             <span id="btnNextText">Siguiente</span>
             <span id="btnNextArrow">&rarr;</span>
           </button>
@@ -743,6 +743,7 @@
 
     let currentStep = 1;
     let isTourActive = true;
+    let isTourCompleted = false;
     let currentTrendIndex = 1;
 
     // Actualizar reloj del smartphone en tiempo real
@@ -876,15 +877,15 @@
         triggerToast('📈 Mostrando curva de adopción');
       } else if (buttonId === 'btnAjustesSub') {
         showScreen('screen-settings', 5);
-        if (isTourActive && currentStep === 5) {
-          triggerToast('🎉 ¡Tour completado con éxito!');
-          setRobotSpeech('¡Excelente trabajo! Pulsa "¡Comenzar!" para calibrar tus preferencias en Telegram.');
+        if (isTourActive) {
+          showTourCompletionUI();
         }
       }
     }
 
     // Funciones del Tour Spotlight
     function updateTourUI() {
+      isTourCompleted = false;
       const step = tourSteps[currentStep - 1];
 
       // Actualizar Popover
@@ -963,29 +964,100 @@
       }
     }
 
+    // Estado especial de finalización del recorrido (señala el botón ¡Comenzar!)
+    function showTourCompletionUI() {
+      isTourCompleted = true;
+
+      // Actualizar Popover
+      const pill = document.getElementById('popoverStepPill');
+      if (pill) pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-brand-mint animate-pulse"></span> 🎉 ¡RECORRIDO TERMINADO! &bull; LISTO PARA ARRANCAR`;
+      
+      const title = document.getElementById('popoverTitle');
+      if (title) title.textContent = "¡Todo Listo para Arrancar!";
+
+      const desc = document.getElementById('popoverDesc');
+      if (desc) desc.textContent = "Has completado el entrenamiento del Radar. Ya conoces cómo rotar tendencias, consultar demanda B2B, eventos presenciales y desplegar el submenú de herramientas.";
+
+      const instruction = document.getElementById('popoverInstruction');
+      if (instruction) instruction.textContent = 'Pulsa el botón "¡Comenzar!" para arrancar tu agente';
+
+      const willDo = document.getElementById('popoverWillDo');
+      if (willDo) willDo.textContent = "Se abrirá la configuración en Telegram para elegir tu país, industria y recibir tus entregas diarias a las 10:00 AM.";
+
+      // Actualizar mensaje del robot mascota
+      setRobotSpeech("¡Felicidades! Terminaste el recorrido. Toca '¡Comenzar!' para configurar tu agente en Telegram.");
+      triggerToast('🎉 ¡Recorrido completado! Pulsa ¡Comenzar!');
+
+      // Encender todos los puntos en menta
+      const dotsContainer = document.getElementById('dotsContainer');
+      if (dotsContainer) {
+        const dots = dotsContainer.children;
+        for (let i = 0; i < dots.length; i++) {
+          dots[i].className = "w-2.5 h-2.5 rounded-full bg-brand-mint shadow-[0_0_10px_#2ee6a8]";
+        }
+      }
+
+      // Remover halos anteriores
+      document.querySelectorAll('.spotlight-active').forEach(el => {
+        el.classList.remove('spotlight-active');
+      });
+
+      // Botón Siguiente / Comenzar
+      const btnNextText = document.getElementById('btnNextText');
+      const btnNextArrow = document.getElementById('btnNextArrow');
+      if (btnNextText) btnNextText.textContent = "¡Comenzar!";
+      if (btnNextArrow) btnNextArrow.textContent = "🚀";
+
+      // Iluminar botón ¡Comenzar! y apuntar el dedo directamente hacia él
+      const btnNext = document.getElementById('btnTourNext');
+      const btnSettingsStart = document.getElementById('btnSettingsStart');
+      const pointer = document.getElementById('buttonFingerPointer');
+
+      if (btnSettingsStart) btnSettingsStart.classList.add('spotlight-active');
+
+      if (btnNext) {
+        btnNext.classList.add('spotlight-active');
+        if (pointer && isTourActive) {
+          btnNext.appendChild(pointer);
+          pointer.classList.remove('hidden');
+        }
+      }
+
+      const btnPrev = document.getElementById('btnTourPrev');
+      if (btnPrev) btnPrev.disabled = false;
+    }
+
     function nextTourStep() {
       if (currentStep < tourSteps.length) {
         currentStep++;
         updateTourUI();
+      } else if (!isTourCompleted) {
+        showTourCompletionUI();
       } else {
         enviarComandoStart();
       }
     }
 
     function prevTourStep() {
-      if (currentStep > 1) {
+      if (isTourCompleted) {
+        isTourCompleted = false;
+        currentStep = 5;
+        updateTourUI();
+      } else if (currentStep > 1) {
         currentStep--;
         updateTourUI();
       }
     }
 
     function goToStep(stepIndex) {
+      isTourCompleted = false;
       currentStep = stepIndex;
       updateTourUI();
     }
 
     function skipTour() {
       isTourActive = false;
+      isTourCompleted = false;
       document.querySelectorAll('.spotlight-active').forEach(el => el.classList.remove('spotlight-active'));
       const pointer = document.getElementById('buttonFingerPointer');
       if (pointer) pointer.classList.add('hidden');
@@ -1001,6 +1073,7 @@
 
     function toggleTourMode() {
       isTourActive = true;
+      isTourCompleted = false;
       const popover = document.getElementById('tourPopoverCard');
       if (popover) popover.style.opacity = '1';
       currentStep = 1;
