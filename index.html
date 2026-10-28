@@ -90,6 +90,19 @@
       z-index: 30;
     }
 
+    /* Animación del dedo apuntador al botón objetivo */
+    @keyframes finger-point-down {
+      0%, 100% {
+        transform: translateY(0px) scale(1);
+      }
+      50% {
+        transform: translateY(6px) scale(1.12);
+      }
+    }
+    .animate-finger-down {
+      animation: finger-point-down 0.75s infinite ease-in-out;
+    }
+
     /* Transición suave entre pantallas del celular */
     .screen-panel {
       transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -146,10 +159,10 @@
   </header>
 
   <!-- CONTENEDOR PRINCIPAL: Celular + Mascota Robot + Popover Spotlight -->
-  <main class="w-full max-w-4xl relative flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 my-auto">
+  <main class="w-full max-w-4xl relative flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-8 my-auto">
     
     <!-- COLUMNA IZQUIERDA/LATERAL: Mascota Robot 3D y Stats del Radar (Visible en móvil y desktop) -->
-    <aside class="flex flex-col items-center justify-center w-full max-w-[320px] lg:w-60 shrink-0 gap-3 lg:gap-4 my-1 lg:my-0">
+    <aside class="flex flex-col items-center justify-center w-full max-w-[340px] sm:max-w-[370px] lg:w-60 shrink-0 gap-3 lg:gap-4 my-1 lg:my-0 order-3 lg:order-1">
       <!-- Mascota Robot Flotante -->
       <div class="w-24 h-24 sm:w-28 sm:h-28 lg:w-36 lg:h-36 relative animate-floating filter drop-shadow-[0_0_20px_rgba(56,189,248,0.35)]">
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
@@ -235,7 +248,7 @@
     </aside>
 
     <!-- COLUMNA CENTRAL: MOCKUP SMARTPHONE TELEGRAM (SANDBOX EN VIVO) -->
-    <div class="relative w-full max-w-[340px] sm:max-w-[370px] shrink-0">
+    <div class="relative w-full max-w-[340px] sm:max-w-[370px] shrink-0 order-2 lg:order-2">
       
       <!-- Chasis del Smartphone -->
       <div class="relative w-full bg-[#080d1c] rounded-[44px] p-3 shadow-phone-glow border-[3px] border-slate-700/80">
@@ -469,8 +482,18 @@
           </div>
 
           <!-- BOTONERA OFICIAL DE TELEGRAM (ORDEN REAREADO 100% FIEL) -->
-          <div class="p-2.5 pt-1 bg-[#090d1c] border-t border-slate-800/90 flex flex-col gap-1.5">
+          <div class="p-2.5 pt-1 bg-[#090d1c] border-t border-slate-800/90 flex flex-col gap-1.5 relative">
             
+            <!-- Dedo apuntador interactivo animado -->
+            <div id="buttonFingerPointer" class="pointer-events-none absolute -top-11 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center select-none hidden">
+              <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-mint text-brand-darkBg shadow-[0_0_12px_#2ee6a8] whitespace-nowrap font-display">
+                ¡TOCA AQUÍ!
+              </span>
+              <span class="text-2xl filter drop-shadow-[0_0_8px_#2ee6a8] animate-finger-down leading-none mt-0.5">
+                👇
+              </span>
+            </div>
+
             <!-- VISTA PRINCIPAL (DEFAULT) -->
             <div id="viewMainMenu" class="flex flex-col gap-1.5">
               
@@ -483,18 +506,18 @@
                   <span>📌</span>
                   <span id="trendCounterLabel">1 / 5</span>
                 </button>
-                <button id="btnNextTrend" onclick="handleTourButtonClick('btnNextTrend')" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center transition-all border border-slate-700/60 shadow-sm">
+                <button id="btnNextTrend" onclick="handleTourButtonClick('btnNextTrend')" class="relative bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center transition-all border border-slate-700/60 shadow-sm">
                   ▶️
                 </button>
               </div>
 
               <!-- FILA 2: Demanda / Eventos -->
               <div id="btnRow2" class="grid grid-cols-2 gap-1 text-[11px]">
-                <button id="btnDemanda" onclick="handleTourButtonClick('btnDemanda')" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
+                <button id="btnDemanda" onclick="handleTourButtonClick('btnDemanda')" class="relative bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
                   <span>🏢</span>
                   <span>Demanda</span>
                 </button>
-                <button id="btnEventos" onclick="handleTourButtonClick('btnEventos')" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
+                <button id="btnEventos" onclick="handleTourButtonClick('btnEventos')" class="relative bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
                   <span>🎟️</span>
                   <span>Eventos</span>
                 </button>
@@ -502,11 +525,11 @@
 
               <!-- FILA 3: Acciones ▾ / Guía 🚀 -->
               <div id="btnRow3" class="grid grid-cols-2 gap-1 text-[11px]">
-                <button id="btnAcciones" onclick="handleTourButtonClick('btnAcciones')" class="bg-[#212944] hover:bg-[#2c375b] active:scale-95 text-amber-300 font-bold py-2 rounded-xl flex items-center justify-center gap-1 transition-all border border-amber-500/25 shadow-sm">
+                <button id="btnAcciones" onclick="handleTourButtonClick('btnAcciones')" class="relative bg-[#212944] hover:bg-[#2c375b] active:scale-95 text-amber-300 font-bold py-2 rounded-xl flex items-center justify-center gap-1 transition-all border border-amber-500/25 shadow-sm">
                   <span>🧰</span>
                   <span>Acciones ▾</span>
                 </button>
-                <button id="btnGuiaMain" onclick="handleTourButtonClick('btnGuiaMain')" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-brand-mint font-semibold py-2 rounded-xl flex items-center justify-center gap-1 transition-all border border-brand-mint/40 shadow-sm">
+                <button id="btnGuiaMain" onclick="handleTourButtonClick('btnGuiaMain')" class="relative bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-brand-mint font-semibold py-2 rounded-xl flex items-center justify-center gap-1 transition-all border border-brand-mint/40 shadow-sm">
                   <span>🎮</span>
                   <span>Guía 🚀</span>
                 </button>
@@ -555,7 +578,7 @@
 
               <!-- Sub Fila 4: Ajustes / Volver -->
               <div class="grid grid-cols-2 gap-1 text-[11px]">
-                <button id="btnAjustesSub" onclick="handleTourButtonClick('btnAjustesSub')" class="bg-[#1b2238] hover:bg-[#252f4d] text-amber-300 font-semibold py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-amber-500/30 shadow-sm">
+                <button id="btnAjustesSub" onclick="handleTourButtonClick('btnAjustesSub')" class="relative bg-[#1b2238] hover:bg-[#252f4d] text-amber-300 font-semibold py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-amber-500/30 shadow-sm">
                   <span>⚙️</span>
                   <span>Ajustes</span>
                 </button>
@@ -573,8 +596,8 @@
       </div>
     </div>
 
-    <!-- COLUMNA DERECHA: RECUADRO SPOTLIGHT (POPOVER EXPLICATIVO DARK TECH) -->
-    <div id="tourPopoverCard" class="w-full max-w-[340px] sm:max-w-[360px] bg-brand-surface/95 backdrop-blur-2xl border border-brand-cyan/40 rounded-3xl p-5 shadow-popover-glow flex flex-col justify-between transition-all duration-300">
+    <!-- COLUMNA DERECHA / SUPERIOR EN MÓVIL: RECUADRO SPOTLIGHT (POPOVER EXPLICATIVO DARK TECH) -->
+    <div id="tourPopoverCard" class="w-full max-w-[340px] sm:max-w-[370px] lg:max-w-[360px] order-1 lg:order-3 bg-brand-surface/95 backdrop-blur-2xl border border-brand-cyan/40 rounded-3xl p-4 sm:p-5 shadow-popover-glow flex flex-col justify-between transition-all duration-300 shrink-0">
       
       <div>
         <!-- Píldora del Paso (Estilo Neón del Agente) -->
@@ -910,9 +933,16 @@
         }
       }
 
-      // Iluminar botón objetivo
+      // Iluminar botón objetivo y posicionar el dedo apuntador físico
       const targetBtn = document.getElementById(step.targetElementId);
-      if (targetBtn) targetBtn.classList.add('spotlight-active');
+      const pointer = document.getElementById('buttonFingerPointer');
+      if (targetBtn) {
+        targetBtn.classList.add('spotlight-active');
+        if (pointer && isTourActive) {
+          targetBtn.appendChild(pointer);
+          pointer.classList.remove('hidden');
+        }
+      }
 
       // Mostrar pantalla correspondiente
       showScreen(step.screenToShow);
@@ -957,6 +987,8 @@
     function skipTour() {
       isTourActive = false;
       document.querySelectorAll('.spotlight-active').forEach(el => el.classList.remove('spotlight-active'));
+      const pointer = document.getElementById('buttonFingerPointer');
+      if (pointer) pointer.classList.add('hidden');
       const popover = document.getElementById('tourPopoverCard');
       if (popover) popover.style.opacity = '0.7';
       const instruction = document.getElementById('popoverInstruction');
@@ -1001,6 +1033,8 @@
     }
 
     function enviarComandoStart(param = 'config') {
+      const pointer = document.getElementById('buttonFingerPointer');
+      if (pointer) pointer.classList.add('hidden');
       triggerToast('🚀 Abriendo Rama B en Telegram...');
       const deepLink = `https://t.me/Tendencias_DiegoBot?start=${param}`;
       const tgScheme = `tg://resolve?domain=Tendencias_DiegoBot&start=${param}`;
