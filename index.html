@@ -222,7 +222,7 @@
           <span class="w-2 h-2 rounded-full bg-brand-mint animate-pulse"></span>
           Agente Inteligente
         </span>
-        <p class="text-xs text-slate-300 font-light leading-relaxed">
+        <p id="robotSpeechText" class="text-xs text-slate-200 font-medium leading-relaxed transition-all duration-300">
           Toca cualquier botón del celular o sigue el tour paso a paso.
         </p>
       </div>
@@ -476,50 +476,50 @@
               
               <!-- FILA 1: Carrusel < 1/5 > -->
               <div id="btnRow1" class="grid grid-cols-3 gap-1">
-                <button onclick="navPrevTrend()" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center transition-all border border-slate-700/60 shadow-sm">
+                <button id="btnPrevTrend" onclick="handleTourButtonClick('btnPrevTrend')" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center transition-all border border-slate-700/60 shadow-sm">
                   ◀️
                 </button>
                 <button onclick="navToggleTrend()" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
                   <span>📌</span>
                   <span id="trendCounterLabel">1 / 5</span>
                 </button>
-                <button onclick="navNextTrend()" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center transition-all border border-slate-700/60 shadow-sm">
+                <button id="btnNextTrend" onclick="handleTourButtonClick('btnNextTrend')" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-white py-2 rounded-xl text-xs font-semibold flex items-center justify-center transition-all border border-slate-700/60 shadow-sm">
                   ▶️
                 </button>
               </div>
 
-              <!-- FILA 2: Demanda / Eventos (¡Gráfica se movió a Acciones!) -->
+              <!-- FILA 2: Demanda / Eventos -->
               <div id="btnRow2" class="grid grid-cols-2 gap-1 text-[11px]">
-                <button id="btnDemanda" onclick="showScreen('screen-demand', 2)" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
+                <button id="btnDemanda" onclick="handleTourButtonClick('btnDemanda')" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
                   <span>🏢</span>
                   <span>Demanda</span>
                 </button>
-                <button id="btnEventos" onclick="showScreen('screen-events', 3)" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
+                <button id="btnEventos" onclick="handleTourButtonClick('btnEventos')" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-all border border-slate-700/60 shadow-sm">
                   <span>🎟️</span>
                   <span>Eventos</span>
                 </button>
               </div>
 
-              <!-- FILA 3: Acciones v / Ajustes -->
+              <!-- FILA 3: Acciones ▾ / Guía 🚀 -->
               <div id="btnRow3" class="grid grid-cols-2 gap-1 text-[11px]">
-                <button id="btnAcciones" onclick="openSubmenuAcciones()" class="bg-[#212944] hover:bg-[#2c375b] active:scale-95 text-amber-300 font-bold py-2 rounded-xl flex items-center justify-center gap-1 transition-all border border-amber-500/25 shadow-sm">
+                <button id="btnAcciones" onclick="handleTourButtonClick('btnAcciones')" class="bg-[#212944] hover:bg-[#2c375b] active:scale-95 text-amber-300 font-bold py-2 rounded-xl flex items-center justify-center gap-1 transition-all border border-amber-500/25 shadow-sm">
                   <span>🧰</span>
                   <span>Acciones ▾</span>
                 </button>
-                <button id="btnAjustes" onclick="showScreen('screen-settings', 5)" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-slate-100 py-2 rounded-xl font-semibold flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
-                  <span>⚙️</span>
-                  <span>Ajustes</span>
+                <button id="btnGuiaMain" onclick="handleTourButtonClick('btnGuiaMain')" class="bg-[#1b2238] hover:bg-[#252f4d] active:scale-95 text-brand-mint font-semibold py-2 rounded-xl flex items-center justify-center gap-1 transition-all border border-brand-mint/40 shadow-sm">
+                  <span>🎮</span>
+                  <span>Guía 🚀</span>
                 </button>
               </div>
 
             </div>
 
-            <!-- SUBMENÚ ACCIONES (AL TOCAR ACCIONES v) -->
+            <!-- SUBMENÚ ACCIONES (AL TOCAR ACCIONES ▾) -->
             <div id="viewSubMenu" class="hidden flex-col gap-1.5">
               
               <!-- Sub Fila 1: Gráfica / Nueva -->
               <div class="grid grid-cols-2 gap-1 text-[11px]">
-                <button id="btnGraficaSub" onclick="showScreen('screen-chart', 4)" class="bg-[#242e4d] hover:bg-[#2e3b63] text-brand-cyan font-bold py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-brand-cyan/30 shadow-sm">
+                <button id="btnGraficaSub" onclick="handleTourButtonClick('btnGraficaSub')" class="bg-[#242e4d] hover:bg-[#2e3b63] text-brand-cyan font-bold py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-brand-cyan/30 shadow-sm">
                   <span>📈</span>
                   <span>Gráfica</span>
                 </button>
@@ -553,11 +553,11 @@
                 </button>
               </div>
 
-              <!-- Sub Fila 4: Grupo TI / Volver -->
+              <!-- Sub Fila 4: Ajustes / Volver -->
               <div class="grid grid-cols-2 gap-1 text-[11px]">
-                <button onclick="alertFeedback('👥 Accediendo al Grupo Público de Discusión')" class="bg-[#1b2238] hover:bg-[#252f4d] text-brand-cyan font-medium py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-slate-700/60 shadow-sm">
-                  <span>👥</span>
-                  <span>Grupo TI</span>
+                <button id="btnAjustesSub" onclick="handleTourButtonClick('btnAjustesSub')" class="bg-[#1b2238] hover:bg-[#252f4d] text-amber-300 font-semibold py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-amber-500/30 shadow-sm">
+                  <span>⚙️</span>
+                  <span>Ajustes</span>
                 </button>
                 <button onclick="closeSubmenuAcciones()" class="bg-[#2a1c2d] hover:bg-[#3a273e] text-fuchsia-300 font-bold py-1.5 rounded-xl flex items-center justify-center gap-1 transition-all border border-fuchsia-500/30 shadow-sm">
                   <span>🔙</span>
@@ -581,11 +581,11 @@
         <div class="flex items-center justify-between mb-3">
           <span id="popoverStepPill" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-brand-mint/15 text-brand-mint border border-brand-mint/35">
             <span class="w-1.5 h-1.5 rounded-full bg-brand-mint animate-pulse"></span>
-            CONOCE TU RADAR &bull; 1 DE 5
+            PASO 1 DE 5 &bull; NAVEGACIÓN
           </span>
           <!-- Indicador de Puntos -->
           <div class="flex items-center gap-1.5" id="dotsContainer">
-            <span class="w-2 h-2 rounded-full bg-brand-mint shadow-[0_0_8px_#2ee6a8]"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-brand-mint shadow-[0_0_10px_#2ee6a8]"></span>
             <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
             <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
             <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
@@ -598,15 +598,23 @@
           Carrusel de Tendencias
         </h2>
 
-        <!-- Descripción -->
-        <p id="popoverDesc" class="text-xs sm:text-sm text-slate-300 leading-relaxed font-light mb-4">
-          Navega entre las 5 mejores tecnologías comerciales del día en el mismo mensaje con las flechas <strong class="text-brand-cyan">◀️ y ▶️</strong> sin saturar tu chat.
-        </p>
+        <!-- Qué hace la funcionalidad -->
+        <div class="mb-3">
+          <span class="text-[10px] uppercase font-bold text-brand-cyan tracking-wider block mb-1">¿Qué hace esta función?</span>
+          <p id="popoverDesc" class="text-xs sm:text-sm text-slate-300 leading-relaxed font-light">
+            Cada día recibes un catálogo con 5 fichas de alta tracción comercial. Las flechas superiores te permiten recorrerlas en el mismo mensaje.
+          </p>
+        </div>
 
-        <!-- Indicador de Acción Interactiva -->
-        <div id="popoverActionHint" class="bg-brand-darkBg/90 border border-brand-cyan/20 rounded-xl p-2.5 mb-4 text-[11px] text-brand-cyan flex items-center gap-2">
-          <span class="text-base animate-bounce">👉</span>
-          <span id="popoverHintText">Prueba dar clic en el botón <strong class="text-white">▶️</strong> del celular para cambiar de tarjeta.</span>
+        <!-- Indicador de Acción Prescriptiva: Qué tocar y qué ocurrirá -->
+        <div id="popoverActionHint" class="bg-brand-darkBg/95 border border-brand-mint/40 rounded-xl p-3 mb-4 flex flex-col gap-1.5 shadow-inner">
+          <div class="flex items-center gap-1.5 text-brand-mint font-bold text-xs">
+            <span class="text-sm animate-bounce">👉</span>
+            <span id="popoverInstruction">Toca el botón ▶️ en el celular</span>
+          </div>
+          <p id="popoverWillDo" class="text-[11px] text-slate-300 leading-snug">
+            Al tocarlo, rotará la tarjeta interactiva a la siguiente tendencia de TI sin saturar tu chat.
+          </p>
         </div>
       </div>
 
@@ -646,57 +654,67 @@
       window.Telegram.WebApp.expand();
     }
 
-    // Datos de los 5 Pasos del Tour Spotlight
+    // Datos de los 5 Pasos del Tour Spotlight Prescriptivo
     const tourSteps = [
       {
         stepNum: 1,
-        pill: "CONOCE TU RADAR &bull; 1 DE 5",
+        pill: "PASO 1 DE 5 &bull; NAVEGACIÓN",
         title: "Carrusel de Tendencias",
-        desc: "Cada día recibes un catálogo con las mejores tecnologías comerciales. Usa la primera fila para recorrer las 5 fichas sin saturar tu chat.",
-        hint: "Da clic en las flechas ◀️ o ▶️ en el teléfono para rotar de tendencia.",
-        targetElementId: "btnRow1",
+        desc: "Cada día recibes un catálogo con 5 tecnologías comerciales de alto impacto. Las flechas superiores te permiten rotar entre ellas en el mismo mensaje.",
+        instruction: "Toca el botón ▶️ en el celular",
+        willDo: "Rotará inmediatamente la pantalla hacia la siguiente tendencia (#2: Agentes de Catálogo B2B) sin saturar tu chat.",
+        robotSpeech: "¡Hola! Toca la flecha ▶️ en el celular para que te muestre la siguiente tecnología del día.",
+        targetElementId: "btnNextTrend",
         screenToShow: "screen-trend-1",
         openSubmenu: false
       },
       {
         stepNum: 2,
-        pill: "CONOCE TU RADAR &bull; 2 DE 5",
+        pill: "PASO 2 DE 5 &bull; OPORTUNIDADES",
         title: "Demanda Empresarial B2B",
-        desc: "Identifica qué corporativos y dependencias de gobierno tienen convocatorias y solicitudes de compra activas para este stack.",
-        hint: "Toca el botón 🏢 Demanda en la fila 2 para ver una licitación real.",
+        desc: "Identifica qué corporativos y dependencias de gobierno tienen convocatorias y solicitudes de compra abiertas para el stack actual.",
+        instruction: "Toca el botón 🏢 Demanda",
+        willDo: "Desplegará la ficha de licitación institucional con presupuestos estimados y periodo de vigencia.",
+        robotSpeech: "Toca 🏢 Demanda en el teléfono para ver contratos corporativos y licitaciones activas.",
         targetElementId: "btnDemanda",
         screenToShow: "screen-demand",
         openSubmenu: false
       },
       {
         stepNum: 3,
-        pill: "CONOCE TU RADAR &bull; 3 DE 5",
-        title: "Eventos Tecnológicos Presenciales",
-        desc: "Accede al calendario de congresos, foros y summits presenciales en CDMX adaptados a tu sector para alianzas comerciales.",
-        hint: "Toca 🎟️ Eventos en la fila 2 para consultar el evento sugerido.",
+        pill: "PASO 3 DE 5 &bull; NETWORKING",
+        title: "Eventos Tecnológicos CDMX",
+        desc: "Revisa la agenda de foros, congresos y summits de tecnología presenciales en CDMX para crear alianzas de negocio.",
+        instruction: "Toca el botón 🎟️ Eventos",
+        willDo: "Consultarás sedes (ej. WTC), fechas y accesos directos para asistir a eventos presenciales en CDMX.",
+        robotSpeech: "Toca 🎟️ Eventos para revisar congresos presenciales en CDMX donde hacer alianzas.",
         targetElementId: "btnEventos",
         screenToShow: "screen-events",
         openSubmenu: false
       },
       {
         stepNum: 4,
-        pill: "CONOCE TU RADAR &bull; 4 DE 5",
-        title: "Submenú Acciones (Gráfica y Stack)",
-        desc: "Al pulsar 🧰 Acciones ▾ se despliegan herramientas técnicas: Gráfica de tracción 📈, pedir una Nueva entrega ⚡, Stack 🛠️ y Favoritos ⭐.",
-        hint: "El submenú se ha desplegado. Toca 📈 Gráfica para ver la curva de demanda.",
+        pill: "PASO 4 DE 5 &bull; ACCIONES",
+        title: "Menú de Acciones Técnicas",
+        desc: "Despliega las herramientas avanzadas del agente: Gráfica de tracción 📈, pedir una Nueva entrega ⚡, Stack técnico 🛠️ y Favoritos ⭐.",
+        instruction: "Toca el botón 🧰 Acciones ▾",
+        willDo: "Abrirá el submenú interactivo donde encontrarás herramientas analíticas y la opción de Ajustes.",
+        robotSpeech: "Toca 🧰 Acciones ▾ para abrir el submenú de herramientas y configuraciones.",
         targetElementId: "btnAcciones",
         screenToShow: "screen-chart",
-        openSubmenu: true
+        openSubmenu: false
       },
       {
         stepNum: 5,
-        pill: "CONOCE TU RADAR &bull; 5 DE 5",
+        pill: "PASO 5 DE 5 &bull; CALIBRACIÓN",
         title: "Ajustes y Personalización",
-        desc: "Calibra tu radar con tu país o zona local, tu industria específica y define a qué hora recibirás tu reporte matutino.",
-        hint: "Toca ⚙️ Ajustes en la fila 3 para ver tu panel de personalización.",
-        targetElementId: "btnAjustes",
+        desc: "Dentro de Acciones tienes el panel de Ajustes para calibrar el bot: tu país o zona de interés, tu industria y hora exacta de entrega.",
+        instruction: "Toca el botón ⚙️ Ajustes en el submenú",
+        willDo: "Abrirá el panel de configuración personalizada para calibrar los parámetros de entrega del agente.",
+        robotSpeech: "Toca ⚙️ Ajustes en el submenú para calibrar tu región, industria y horario matutino.",
+        targetElementId: "btnAjustesSub",
         screenToShow: "screen-settings",
-        openSubmenu: false
+        openSubmenu: true
       }
     ];
 
@@ -716,6 +734,14 @@
     }
     updateClock();
     setInterval(updateClock, 30000);
+
+    // Actualizar mensaje del robot mascota
+    function setRobotSpeech(msg) {
+      const el = document.getElementById('robotSpeechText');
+      if (el) {
+        el.textContent = msg;
+      }
+    }
 
     // Cambiar pantallas en el celular
     function showScreen(screenId, stepIndex) {
@@ -777,7 +803,6 @@
       document.getElementById('viewMainMenu').classList.add('hidden');
       document.getElementById('viewSubMenu').classList.remove('hidden');
       document.getElementById('viewSubMenu').classList.add('flex');
-      showScreen('screen-chart', 4);
     }
 
     function closeSubmenuAcciones() {
@@ -787,23 +812,87 @@
       updateTrendDisplay();
     }
 
+    // Manejador centralizado e interactivo de clics en la botonera
+    function handleTourButtonClick(buttonId) {
+      if (buttonId === 'btnPrevTrend') {
+        navPrevTrend();
+      } else if (buttonId === 'btnNextTrend') {
+        navNextTrend();
+        if (isTourActive && currentStep === 1) {
+          triggerToast('✅ ¡Bien hecho! Tarjeta rotada');
+          setRobotSpeech('¡Excelente! Rotaste a la segunda tarjeta. Ahora pasemos al Paso 2.');
+          setTimeout(() => { if (isTourActive && currentStep === 1) nextTourStep(); }, 1100);
+        }
+      } else if (buttonId === 'btnDemanda') {
+        showScreen('screen-demand', 2);
+        if (isTourActive && currentStep === 2) {
+          triggerToast('✅ Licitación B2B consultada');
+          setRobotSpeech('¡Muy bien! Ahí ves la licitación activa. Ahora continuemos con el Paso 3.');
+          setTimeout(() => { if (isTourActive && currentStep === 2) nextTourStep(); }, 1100);
+        }
+      } else if (buttonId === 'btnEventos') {
+        showScreen('screen-events', 3);
+        if (isTourActive && currentStep === 3) {
+          triggerToast('✅ Eventos CDMX abiertos');
+          setRobotSpeech('¡Estupendo! Tienes la cartelera de foros en CDMX. Ahora continuemos con Acciones.');
+          setTimeout(() => { if (isTourActive && currentStep === 3) nextTourStep(); }, 1100);
+        }
+      } else if (buttonId === 'btnAcciones') {
+        openSubmenuAcciones();
+        showScreen('screen-chart', 4);
+        if (isTourActive && currentStep === 4) {
+          triggerToast('✅ Submenú Acciones desplegado');
+          setRobotSpeech('¡Genial! Submenú abierto. Ahora toca ⚙️ Ajustes para calibrar tu bot.');
+          setTimeout(() => { if (isTourActive && currentStep === 4) nextTourStep(); }, 1000);
+        }
+      } else if (buttonId === 'btnGuiaMain') {
+        triggerToast('🎮 Ya te encuentras dentro de la Guía');
+        setRobotSpeech('¡Ya estás interactuando en la Guía Oficial! Sigue las instrucciones o pulsa Iniciar.');
+      } else if (buttonId === 'btnGraficaSub') {
+        showScreen('screen-chart', 4);
+        triggerToast('📈 Mostrando curva de adopción');
+      } else if (buttonId === 'btnAjustesSub') {
+        showScreen('screen-settings', 5);
+        if (isTourActive && currentStep === 5) {
+          triggerToast('🎉 ¡Tour completado con éxito!');
+          setRobotSpeech('¡Excelente trabajo! Pulsa "¡Comenzar!" para calibrar tus preferencias en Telegram.');
+        }
+      }
+    }
+
     // Funciones del Tour Spotlight
     function updateTourUI() {
       const step = tourSteps[currentStep - 1];
 
       // Actualizar Popover
-      document.getElementById('popoverStepPill').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-brand-mint animate-pulse"></span> ${step.pill}`;
-      document.getElementById('popoverTitle').textContent = step.title;
-      document.getElementById('popoverDesc').textContent = step.desc;
-      document.getElementById('popoverHintText').innerHTML = step.hint;
+      const pill = document.getElementById('popoverStepPill');
+      if (pill) pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-brand-mint animate-pulse"></span> ${step.pill}`;
+      
+      const title = document.getElementById('popoverTitle');
+      if (title) title.textContent = step.title;
+
+      const desc = document.getElementById('popoverDesc');
+      if (desc) desc.textContent = step.desc;
+
+      const instruction = document.getElementById('popoverInstruction');
+      if (instruction) instruction.textContent = step.instruction;
+
+      const willDo = document.getElementById('popoverWillDo');
+      if (willDo) willDo.textContent = step.willDo;
+
+      // Actualizar mensaje del robot mascota
+      setRobotSpeech(step.robotSpeech);
 
       // Actualizar dots
-      const dots = document.getElementById('dotsContainer').children;
-      for (let i = 0; i < dots.length; i++) {
-        if (i === currentStep - 1) {
-          dots[i].className = "w-2.5 h-2.5 rounded-full bg-brand-mint shadow-[0_0_10px_#2ee6a8]";
-        } else {
-          dots[i].className = "w-1.5 h-1.5 rounded-full bg-slate-700";
+      const dotsContainer = document.getElementById('dotsContainer');
+      if (dotsContainer) {
+        const dots = dotsContainer.children;
+        for (let i = 0; i < dots.length; i++) {
+          if (i === currentStep - 1) {
+            dots[i].className = "w-2.5 h-2.5 rounded-full bg-brand-mint shadow-[0_0_10px_#2ee6a8]";
+          } else {
+            dots[i].className = "w-1.5 h-1.5 rounded-full bg-slate-700";
+          }
         }
       }
 
@@ -812,35 +901,35 @@
         el.classList.remove('spotlight-active');
       });
 
-      // Iluminar botón objetivo
+      // Manejar visibilidad de submenú según el paso
       if (step.openSubmenu) {
         openSubmenuAcciones();
-        const chartBtn = document.getElementById('btnGraficaSub');
-        if (chartBtn) chartBtn.classList.add('spotlight-active');
       } else {
         if (!document.getElementById('viewSubMenu').classList.contains('hidden')) {
           closeSubmenuAcciones();
         }
-        const targetBtn = document.getElementById(step.targetElementId);
-        if (targetBtn) targetBtn.classList.add('spotlight-active');
       }
+
+      // Iluminar botón objetivo
+      const targetBtn = document.getElementById(step.targetElementId);
+      if (targetBtn) targetBtn.classList.add('spotlight-active');
 
       // Mostrar pantalla correspondiente
       showScreen(step.screenToShow);
 
       // Botón Atrás
       const btnPrev = document.getElementById('btnTourPrev');
-      btnPrev.disabled = currentStep === 1;
+      if (btnPrev) btnPrev.disabled = currentStep === 1;
 
       // Botón Siguiente / Finalizar
       const btnNextText = document.getElementById('btnNextText');
       const btnNextArrow = document.getElementById('btnNextArrow');
       if (currentStep === tourSteps.length) {
-        btnNextText.textContent = "¡Comenzar!";
-        btnNextArrow.textContent = "🚀";
+        if (btnNextText) btnNextText.textContent = "¡Comenzar!";
+        if (btnNextArrow) btnNextArrow.textContent = "🚀";
       } else {
-        btnNextText.textContent = "Siguiente";
-        btnNextArrow.textContent = "→";
+        if (btnNextText) btnNextText.textContent = "Siguiente";
+        if (btnNextArrow) btnNextArrow.textContent = "→";
       }
     }
 
@@ -869,15 +958,19 @@
       isTourActive = false;
       document.querySelectorAll('.spotlight-active').forEach(el => el.classList.remove('spotlight-active'));
       const popover = document.getElementById('tourPopoverCard');
-      popover.style.opacity = '0.5';
-      document.getElementById('popoverHintText').innerHTML = "Modo Libre: Puedes dar clic a cualquier botón para probar el radar sin restricciones.";
+      if (popover) popover.style.opacity = '0.7';
+      const instruction = document.getElementById('popoverInstruction');
+      if (instruction) instruction.textContent = "Modo Libre activado";
+      const willDo = document.getElementById('popoverWillDo');
+      if (willDo) willDo.textContent = "Puedes tocar cualquier botón del smartphone para explorar el radar sin restricciones.";
+      setRobotSpeech("Modo Libre activo: explora cualquier botón del teléfono a tu gusto.");
       triggerToast('🎮 Modo Sandbox Libre activado');
     }
 
     function toggleTourMode() {
       isTourActive = true;
       const popover = document.getElementById('tourPopoverCard');
-      popover.style.opacity = '1';
+      if (popover) popover.style.opacity = '1';
       currentStep = 1;
       updateTourUI();
       triggerToast('🎯 Tour interactivo reiniciado');
@@ -897,6 +990,7 @@
     function triggerToast(msg) {
       const toast = document.getElementById('toastNotification');
       const text = document.getElementById('toastMessage');
+      if (!toast || !text) return;
       text.textContent = msg;
       toast.classList.remove('translate-y-24', 'opacity-0');
       toast.classList.add('translate-y-0', 'opacity-100');
@@ -909,17 +1003,23 @@
     function enviarComandoStart(param = 'config') {
       triggerToast('🚀 Abriendo Rama B en Telegram...');
       const deepLink = `https://t.me/Tendencias_DiegoBot?start=${param}`;
+      const tgScheme = `tg://resolve?domain=Tendencias_DiegoBot&start=${param}`;
 
       if (window.Telegram && window.Telegram.WebApp) {
         try {
           if (typeof window.Telegram.WebApp.openTelegramLink === 'function') {
             window.Telegram.WebApp.openTelegramLink(deepLink);
           } else {
-            window.open(deepLink, '_blank');
+            window.location.href = tgScheme;
           }
-          if (typeof window.Telegram.WebApp.close === 'function') {
-            window.Telegram.WebApp.close();
-          }
+          // Delay de 500ms antes de cerrar para permitir al SO despachar el intent en Telegram móvil
+          setTimeout(() => {
+            try {
+              if (typeof window.Telegram.WebApp.close === 'function') {
+                window.Telegram.WebApp.close();
+              }
+            } catch (err) {}
+          }, 500);
           return;
         } catch (e) {
           console.error("Error abriendo enlace de Telegram WebApp:", e);
@@ -928,7 +1028,8 @@
 
       // Navegador web externo / PC
       try {
-        window.location.href = deepLink;
+        window.location.href = tgScheme;
+        setTimeout(() => { window.location.href = deepLink; }, 300);
       } catch (e) {
         window.open(deepLink, '_blank');
       }
